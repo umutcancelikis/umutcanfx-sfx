@@ -1,6 +1,6 @@
 {
-  "version": "1.7.9",
-  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.7.9/UmutcanFX_1_7_9.zxp",
+  "version": "1.8.0",
+  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.8.0/UmutcanFX_1_8_0.zxp",
   "notes": "One-click update now works for ZXP installs too: if the extension folder needs administrator rights, the panel asks the system for permission and installs itself.",
   "notes_tr": "ZXP ile kurulan panellerde de tek tıkla güncelleme çalışıyor: klasör yönetici izni istiyorsa panel izni işletim sisteminden isteyip kendini kuruyor."
 }
