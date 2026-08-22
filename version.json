@@ -1,6 +1,6 @@
 {
-  "version": "1.7.4",
-  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.7.4/UmutcanFX_V1_7_4.zxp",
-  "notes": "Update package is now the ZXP itself — one file per release.",
-  "notes_tr": "Güncelleme paketi artık ZXP'nin kendisi — sürüm başına tek dosya."
+  "version": "1.7.5",
+  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.7.5/UmutcanFX_V1_7_5.zxp",
+  "notes": "Test build for the in-panel updater.",
+  "notes_tr": "Panel içi güncellemeyi denemek için sürüm."
 }
