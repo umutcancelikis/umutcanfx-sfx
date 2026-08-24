@@ -1,6 +1,6 @@
 {
-  "version": "1.8.1",
-  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.8.1/UmutcanFX_1_8_1.zxp",
-  "notes": "Update checks now run every time the panel opens, and the version is read straight from the GitHub release list. One-click update also works for ZXP installs: if the extension folder needs administrator rights, the panel asks the system for permission.",
-  "notes_tr": "Güncelleme kontrolü artık panel her açıldığında yapılıyor ve sürüm doğrudan GitHub release listesinden okunuyor. ZXP ile kurulan panellerde de tek tıkla güncelleme çalışıyor: klasör yönetici izni istiyorsa panel izni işletim sisteminden istiyor."
+  "version": "1.8.9",
+  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.8.9/UmutcanFX_1_8_9.zxp",
+  "notes": "",
+  "notes_tr": ""
 }
