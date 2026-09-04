@@ -1,6 +1,6 @@
 {
-  "version": "1.10.44",
-  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.10.44/UmutcanFX_1_10_44.zxp",
-  "notes": "",
-  "notes_tr": ""
+  "version": "1.10.47",
+  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.10.47/UmutcanFX_1_10_47.zxp",
+  "notes": "Fixes the 'bad json' error some users saw after updating from inside the panel. After Effects only loads the panel's script once at launch, so an update used to leave the old script running until AE was restarted. The panel now reloads its script from disk every time it opens, so updates apply immediately - no restart needed. Settings > About now shows the panel and script versions side by side, and if they ever differ the panel says exactly what to do instead of showing a cryptic error.",
+  "notes_tr": "Panelden guncelleme sonrasi bazi kullanicilarda cikan 'bad json' hatasi giderildi. After Effects panelin script dosyasini yalnizca acilista yukledigi icin, guncelleme sonrasi AE kapatilip acilana kadar eski script calismaya devam ediyordu. Panel artik her acilista script'ini diskten yeniden yukluyor; guncelleme aninda uygulaniyor, AE'yi kapatmaya gerek kalmiyor. Ayarlar > Hakkinda'da panel ve script surumu yan yana gosteriliyor; farkli olurlarsa panel kriptik hata yerine ne yapilmasi gerektigini net soyluyor."
 }
