@@ -1,0 +1,74 @@
+name: Mac altyazı motoru
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: whisper.cpp'yi al
+        run: |
+          set -e
+          REF=$(curl -s https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+          echo "whisper.cpp sürümü: $REF"
+          echo "WREF=$REF" >> "$GITHUB_ENV"
+          git clone --depth 1 --branch "$REF" https://github.com/ggml-org/whisper.cpp.git src
+
+      - name: Derle — arm64
+        working-directory: src
+        run: |
+          set -e
+          cmake -B build-arm64 -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=13.3 \
+            -DBUILD_SHARED_LIBS=OFF -DGGML_NATIVE=OFF \
+            -DGGML_METAL=ON -DGGML_METAL_EMBED_LIBRARY=ON \
+            -DWHISPER_BUILD_TESTS=OFF -DWHISPER_BUILD_SERVER=OFF
+          cmake --build build-arm64 --config Release -j "$(sysctl -n hw.ncpu)" --target whisper-cli
+
+      - name: Derle — x86_64
+        continue-on-error: true
+        working-directory: src
+        run: |
+          set -e
+          cmake -B build-x64 -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=13.3 \
+            -DBUILD_SHARED_LIBS=OFF -DGGML_NATIVE=OFF \
+            -DGGML_METAL=ON -DGGML_METAL_EMBED_LIBRARY=ON \
+            -DWHISPER_BUILD_TESTS=OFF -DWHISPER_BUILD_SERVER=OFF
+          cmake --build build-x64 --config Release -j "$(sysctl -n hw.ncpu)" --target whisper-cli
+
+      - name: Birleştir, imzala, dene
+        working-directory: src
+        run: |
+          set -e
+          mkdir -p ../out
+          if [ -f build-x64/bin/whisper-cli ]; then
+            lipo -create build-arm64/bin/whisper-cli build-x64/bin/whisper-cli -output ../out/whisper-cli
+            echo "universal (arm64 + x86_64)"
+          else
+            cp build-arm64/bin/whisper-cli ../out/whisper-cli
+            echo "yalnız arm64"
+          fi
+          cd ../out
+          chmod +x whisper-cli
+          codesign --force --sign - whisper-cli
+          lipo -info whisper-cli
+          otool -L whisper-cli
+          ./whisper-cli -h > /dev/null && echo "duman testi: OK"
+          zip -j whisper-mac.zip whisper-cli
+          shasum -a 256 whisper-mac.zip | tee whisper-mac.sha256
+
+      - name: Release'e koy
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mac-engine-v1
+          name: "Mac altyazı motoru"
+          body: "macOS altyazı motoru (whisper.cpp ${{ env.WREF }}). Panel 1.10.48+ bunu otomatik indirir."
+          make_latest: false
+          files: |
+            out/whisper-mac.zip
+            out/whisper-mac.sha256
