@@ -13,7 +13,10 @@ jobs:
       - name: whisper.cpp'yi al
         run: |
           set -e
-          REF=$(curl -s https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+          REF=$(git ls-remote --tags --refs --sort=-v:refname \
+                https://github.com/ggml-org/whisper.cpp.git 'v*' \
+                | head -1 | sed 's|.*refs/tags/||')
+          if [ -z "$REF" ]; then REF=master; fi
           echo "whisper.cpp sürümü: $REF"
           echo "WREF=$REF" >> "$GITHUB_ENV"
           git clone --depth 1 --branch "$REF" https://github.com/ggml-org/whisper.cpp.git src
@@ -51,7 +54,7 @@ jobs:
             echo "universal (arm64 + x86_64)"
           else
             cp build-arm64/bin/whisper-cli ../out/whisper-cli
-            echo "yalnız arm64"
+            echo "yalniz arm64"
           fi
           cd ../out
           chmod +x whisper-cli
@@ -61,13 +64,14 @@ jobs:
           ./whisper-cli -h > /dev/null && echo "duman testi: OK"
           zip -j whisper-mac.zip whisper-cli
           shasum -a 256 whisper-mac.zip | tee whisper-mac.sha256
+          ls -la
 
       - name: Release'e koy
         uses: softprops/action-gh-release@v2
         with:
           tag_name: mac-engine-v1
-          name: "Mac altyazı motoru"
-          body: "macOS altyazı motoru (whisper.cpp ${{ env.WREF }}). Panel 1.10.48+ bunu otomatik indirir."
+          name: "Mac altyazi motoru"
+          body: "macOS altyazi motoru (whisper.cpp ${{ env.WREF }}). Panel 1.10.48+ bunu otomatik indirir."
           make_latest: false
           files: |
             out/whisper-mac.zip
