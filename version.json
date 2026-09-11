@@ -1,6 +1,6 @@
 {
-  "version": "1.10.48",
-  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.10.48/UmutcanFX_1_10_48.zxp",
-  "notes_tr": "ÖNEMLİ: Panel açılışında After Effects'i dondurabilen/düşürebilen bir yük giderildi — script motoru artık yalnızca gerekince tazeleniyor, normal açılışta hiç. Altyazıda yeni large-v3-turbo modeli (large-v3 kalitesine yakın, 5-6 kat hızlı, 1,6 GB). Mac altyazı motoru artık panelin kendi derlediği sürümle geliyor: Xcode Command Line Tools, Homebrew ya da Terminal gerekmiyor.",
-  "notes_en": "IMPORTANT: Fixed a startup load that could freeze or crash After Effects — the script engine is now refreshed only when needed, never on a normal open. Subtitles: new large-v3-turbo model (near large-v3 quality, 5-6x faster, 1.6 GB). The macOS subtitle engine now ships as our own build: no Xcode Command Line Tools, Homebrew or Terminal needed."
+  "version": "1.10.50",
+  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.10.50/UmutcanFX_1_10_50.zxp",
+  "notes": "• Colour pickers now work on macOS. Subtitle text colour, background bar and stroke are picked inside the panel, so the button responds on Mac as well as Windows.\n• Anim tab: \"Advanced\" is no longer buried under the preset grid. A Presets / Advanced switch sits at the top of the tab.\n• Recent colours and hex input added to the picker.",
+  "notes_tr": "• Renk seçiciler artık macOS'ta da çalışıyor. Altyazı metin rengi, arka şerit ve kontur rengi panelin içinden seçiliyor; Mac'te de butona basınca açılıyor.\n• Anim sekmesi: \"Gelişmiş\" bölümü artık preset ızgarasının altında kaybolmuyor. Sekmenin en üstüne Hazır Ayarlar / Gelişmiş düğmesi eklendi.\n• Renk seçicide son kullanılan renkler ve hex kutusu var."
 }
