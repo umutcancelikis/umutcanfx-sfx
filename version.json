@@ -1,6 +1,6 @@
 {
-  "version": "1.10.50",
-  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.10.50/UmutcanFX_1_10_50.zxp",
-  "notes": "• Colour pickers now work on macOS. Subtitle text colour, background bar and stroke are picked inside the panel, so the button responds on Mac as well as Windows.\n• Anim tab: \"Advanced\" is no longer buried under the preset grid. A Presets / Advanced switch sits at the top of the tab.\n• Recent colours and hex input added to the picker.",
-  "notes_tr": "• Renk seçiciler artık macOS'ta da çalışıyor. Altyazı metin rengi, arka şerit ve kontur rengi panelin içinden seçiliyor; Mac'te de butona basınca açılıyor.\n• Anim sekmesi: \"Gelişmiş\" bölümü artık preset ızgarasının altında kaybolmuyor. Sekmenin en üstüne Hazır Ayarlar / Gelişmiş düğmesi eklendi.\n• Renk seçicide son kullanılan renkler ve hex kutusu var."
+  "version": "1.10.52",
+  "zip": "https://github.com/umutcancelikis/umutcanfx-sfx/releases/download/panel-1.10.52/UmutcanFX_1_10_52.zxp",
+  "notes": "• Fixes \"Install failed: HTTP 404\" when installing the subtitle engine on Windows. whisper.cpp published its latest release without the Windows binaries, so the download address disappeared. The panel now tries pinned, known-good versions first.\n• Colour pickers work on macOS (subtitle text, background bar, stroke).\n• Anim tab: Presets / Advanced switch at the top.",
+  "notes_tr": "• Windows'ta altyazı motoru kurulurken çıkan \"Install failed: HTTP 404\" hatası giderildi. whisper.cpp son sürümünü Windows dosyaları olmadan yayınlayınca indirme adresi kaybolmuştu; panel artık sürüme sabitlenmiş, çalıştığı bilinen adresleri deniyor.\n• Renk seçiciler macOS'ta da çalışıyor (altyazı metni, arka şerit, kontur).\n• Anim sekmesi: en üstte Hazır Ayarlar / Gelişmiş düğmesi."
 }
