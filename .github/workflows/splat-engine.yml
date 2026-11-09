@@ -1,0 +1,120 @@
+name: 3B motoru
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  BRUSH_REF: 1388f74c6fe0236f68ee4915564bf00e9d2e3747
+  PKG: brush-cli-1.0.0-1388f74
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            target: aarch64-apple-darwin
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+    steps:
+      - name: Uzun yollar (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: git config --global core.longpaths true
+
+      - name: Kaynak (Brush, degistirilmeden)
+        uses: actions/checkout@v4
+        with:
+          repository: ArthurBrussee/brush
+          ref: ${{ env.BRUSH_REF }}
+          path: src
+          persist-credentials: false
+
+      - name: Rust 1.95.0
+        shell: bash
+        run: |
+          set -e
+          rustup toolchain install 1.95.0 --profile minimal --no-self-update
+          rustup default 1.95.0
+          rustup target add ${{ matrix.target }}
+          rustc -V
+          cargo -V
+
+      - name: Derle
+        shell: bash
+        working-directory: src
+        run: |
+          set -e
+          test "$(git rev-parse HEAD)" = "$BRUSH_REF"
+          if [ "${{ runner.os }}" = "Windows" ]; then export RUSTFLAGS="-C target-feature=+crt-static"; fi
+          cargo build --release --locked -p brush-cli --target ${{ matrix.target }}
+
+      - name: Paketle, dene
+        shell: bash
+        run: |
+          set -e
+          D="$PKG-${{ matrix.target }}"
+          mkdir -p out "pack/$D"
+          cp src/LICENSE "pack/$D/LICENSE"
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cp "src/target/${{ matrix.target }}/release/brush-cli.exe" "pack/$D/brush-cli.exe"
+            "pack/$D/brush-cli.exe" --help > help.txt
+            head -5 help.txt
+            (cd "pack/$D" && 7z a -tzip -mx=9 "../../out/$D.zip" brush-cli.exe LICENSE)
+            (cd out && sha256sum "$D.zip" | tee "$D.zip.sha256")
+          else
+            cp "src/target/${{ matrix.target }}/release/brush-cli" "pack/$D/brush-cli"
+            chmod +x "pack/$D/brush-cli"
+            codesign --force --sign - "pack/$D/brush-cli"
+            codesign -v "pack/$D/brush-cli"
+            lipo -info "pack/$D/brush-cli"
+            otool -L "pack/$D/brush-cli"
+            "pack/$D/brush-cli" --help > help.txt
+            head -5 help.txt
+            (cd pack && tar -cJf "../out/$D.tar.xz" "$D")
+            (cd out && shasum -a 256 "$D.tar.xz" | tee "$D.tar.xz.sha256")
+          fi
+          ls -la out
+
+      - name: Dosyalari sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: out/*
+          if-no-files-found: error
+
+  release:
+    name: Release'e koy
+    needs: build
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dosyalari al
+        uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+
+      - name: Liste
+        run: |
+          ls -la out
+          cat out/*.sha256
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: brush-cli-1.0.0-1388f74
+          name: "3B motoru"
+          body: "Brush (Apache-2.0) komut satiri surumu, kaynak surum 1388f74c6fe0236f68ee4915564bf00e9d2e3747 - degistirilmeden derlendi. Kaynak: https://github.com/ArthurBrussee/brush"
+          make_latest: false
+          files: |
+            out/*.tar.xz
+            out/*.zip
+            out/*.sha256
