@@ -1,0 +1,47 @@
+name: SFX engine (Mac)
+on:
+  push:
+    branches: [sfx-mac-build]
+permissions:
+  contents: write
+jobs:
+  mac:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Source (openmoss v0.3.0, Apache-2.0)
+        run: |
+          git clone --depth 1 --branch v0.3.0 --recurse-submodules --shallow-submodules https://github.com/pwilkin/openmoss src
+          git -C src rev-parse HEAD
+          git -C src/third_party/llama.cpp rev-parse HEAD
+      - name: Build (Metal, arm64)
+        run: |
+          cmake -S src -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DGGML_METAL=ON -DGGML_METAL_EMBED_LIBRARY=ON -DGGML_NATIVE=OFF -DBUILD_SHARED_LIBS=OFF
+          cmake --build build --config Release -j 3 --target moss-tts-server
+      - name: Test
+        run: |
+          B=$(find build -type f -name moss-tts-server | head -1); echo "BIN=$B" >> "$GITHUB_ENV"
+          "$B" --help
+          otool -L "$B"
+          ("$B" --model /tmp/none.gguf --port 18080 --no-webui 2>&1 || true) | head -40
+      - name: Package
+        run: |
+          mkdir -p pkg/bin pkg/licenses
+          cp "$BIN" pkg/bin/moss-tts-server && codesign --force -s - pkg/bin/moss-tts-server
+          cp src/LICENSE pkg/licenses/openmoss-LICENSE.txt
+          cp src/third_party/llama.cpp/LICENSE pkg/licenses/llama.cpp-LICENSE.txt
+          find src/third_party -maxdepth 2 -type f \( -iname 'LICENSE*' -o -iname 'COPYING*' -o -iname 'NOTICE*' \) -not -path '*/llama.cpp/*' | while read f; do cp "$f" "pkg/licenses/$(basename "$(dirname "$f")")-$(basename "$f").txt"; done
+          for h in $(find src/third_party -maxdepth 3 -type f \( -name 'httplib.h' -o -name 'json.hpp' \)); do head -n 40 "$h" > "pkg/licenses/$(basename "$h")-license-header.txt"; done
+          (cd pkg && zip -qry ../ufx-sfx-engine-macos-arm64.zip .)
+          ls -l ufx-sfx-engine-macos-arm64.zip && shasum -a 256 ufx-sfx-engine-macos-arm64.zip && unzip -l ufx-sfx-engine-macos-arm64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ufx-sfx-engine-macos-arm64
+          path: ufx-sfx-engine-macos-arm64.zip
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create sfx-engine-mac-1 ufx-sfx-engine-macos-arm64.zip --repo "$GITHUB_REPOSITORY" --target main \
+            --title "UmutcanFX SFX engine (Mac) 1" --notes "Mac (M1 and later) engine for Sound Lab - Text to Sound Effect. License files are inside the zip."
