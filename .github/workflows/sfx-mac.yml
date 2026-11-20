@@ -14,6 +14,11 @@ jobs:
           git clone --depth 1 --branch v0.3.0 --recurse-submodules --shallow-submodules https://github.com/pwilkin/openmoss src
           git -C src rev-parse HEAD
           git -C src/third_party/llama.cpp rev-parse HEAD
+      - name: Xcode 26 (M5 tensor API)
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.3.app
+          xcodebuild -version
+          xcrun --sdk macosx --show-sdk-version
       - name: Build (Metal, arm64)
         run: |
           cmake -S src -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
@@ -43,5 +48,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create sfx-engine-mac-1 ufx-sfx-engine-macos-arm64.zip --repo "$GITHUB_REPOSITORY" --target main \
-            --title "UmutcanFX SFX engine (Mac) 1" --notes "Mac (M1 and later) engine for Sound Lab - Text to Sound Effect. License files are inside the zip."
+          gh release create sfx-engine-mac-2 ufx-sfx-engine-macos-arm64.zip --repo "$GITHUB_REPOSITORY" --target main --latest=false \
+            --title "UmutcanFX SFX engine (Mac) 2" --notes "Mac (M1 and later) engine for Sound Lab - Text to Sound Effect. License files are inside the zip."
